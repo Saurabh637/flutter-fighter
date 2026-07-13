@@ -8,12 +8,10 @@ import 'character_config.dart';
 /// A base class for all characters in Nexus Clash (Player, Enemy).
 ///
 /// This class handles shared physics, movement, and collision logic.
+/// It uses a [CharacterConfig] to define its specific gameplay attributes.
 abstract class Character extends RectangleComponent with HasGameReference {
-  /// Horizontal movement speed in pixels per second.
-  final double moveSpeed;
-
-  /// The upward force applied when the character jumps.
-  final double jumpForce;
+  /// The configuration object containing this character's statistics and physics values.
+  final CharacterConfig config;
 
   /// The current horizontal direction.
   CharacterDirection currentDirection = CharacterDirection.none;
@@ -28,13 +26,13 @@ abstract class Character extends RectangleComponent with HasGameReference {
   bool isGrounded = false;
 
   Character({
-    required Vector2 size,
+    required this.config,
     required Color color,
-    required this.moveSpeed,
-    required this.jumpForce,
+    Vector2? position,
     Anchor anchor = Anchor.bottomCenter,
   }) : super(
-          size: size,
+          size: config.size,
+          position: position,
           paint: Paint()..color = color,
           anchor: anchor,
         );
@@ -68,13 +66,13 @@ abstract class Character extends RectangleComponent with HasGameReference {
     }
   }
 
-  /// Applies horizontal movement based on [currentDirection] and [moveSpeed].
+  /// Applies horizontal movement based on [currentDirection] and [config.moveSpeed].
   void applyHorizontalMovement(double dt) {
     double dirMultiplier = 0;
     if (currentDirection == CharacterDirection.left) dirMultiplier = -1;
     if (currentDirection == CharacterDirection.right) dirMultiplier = 1;
 
-    position.x += dirMultiplier * moveSpeed * dt;
+    position.x += dirMultiplier * config.moveSpeed * dt;
 
     // Keep the character within the visible screen bounds (X axis).
     final halfWidth = size.x / 2;
@@ -85,9 +83,9 @@ abstract class Character extends RectangleComponent with HasGameReference {
     }
   }
 
-  /// Applies gravity and handles ground collision.
+  /// Applies gravity and handles ground collision using [config.gravity].
   void applyGravityAndCollision(double dt) {
-    verticalVelocity += CharacterConfig.gravity * dt;
+    verticalVelocity += config.gravity * dt;
     position.y += verticalVelocity * dt;
 
     final groundY = game.size.y - Ground.groundHeight;
@@ -100,10 +98,10 @@ abstract class Character extends RectangleComponent with HasGameReference {
     }
   }
 
-  /// Triggers a jump if the character is grounded.
+  /// Triggers a jump if the character is grounded using [config.jumpForce].
   void jump() {
     if (isGrounded) {
-      verticalVelocity = jumpForce;
+      verticalVelocity = config.jumpForce;
       isGrounded = false;
     }
   }

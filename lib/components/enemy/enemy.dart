@@ -1,3 +1,4 @@
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../character/character.dart';
 import '../character/character_config.dart';
@@ -8,11 +9,10 @@ import '../character/character_config.dart';
 /// and will be expanded with AI and combat logic in future milestones.
 class Enemy extends Character {
   Enemy({
-    required super.size,
-    required super.position,
+    Vector2? position,
   }) : super(
+          config: CharacterConfig.defaultEnemy,
           color: const Color(0xFFF44336), // Red color for enemies
-          moveSpeed: CharacterConfig.defaultMoveSpeed,
-          jumpForce: CharacterConfig.defaultJumpForce,
+          position: position,
         );
 }

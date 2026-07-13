@@ -7,14 +7,12 @@ import '../character/direction.dart';
 /// A component representing the player character controlled by the user.
 ///
 /// Inherits physics and movement logic from [Character] and handles
-/// user keyboard input.
+/// user keyboard input based on its [config].
 class Player extends Character with KeyboardHandler {
   Player()
       : super(
-          size: CharacterConfig.defaultSize,
+          config: CharacterConfig.defaultPlayer,
           color: const Color(0xFF2196F3), // Blue color
-          moveSpeed: CharacterConfig.defaultMoveSpeed,
-          jumpForce: CharacterConfig.defaultJumpForce,
         );
 
   @override
