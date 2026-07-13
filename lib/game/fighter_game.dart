@@ -1,4 +1,5 @@
 import 'package:flame/game.dart';
+import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 import 'world.dart';
 
@@ -6,7 +7,9 @@ import 'world.dart';
 ///
 /// This class handles the game loop, component management,
 /// and high-level game state.
-class FighterGame extends FlameGame {
+/// [HasKeyboardHandlerComponents] is added to support keyboard input
+/// within child components.
+class FighterGame extends FlameGame with HasKeyboardHandlerComponents {
   /// The world foundation containing environmental components.
   late final FighterWorld fighterWorld;
 

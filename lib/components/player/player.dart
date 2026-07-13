@@ -1,20 +1,25 @@
 import 'package:flame/components.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import '../environment/ground.dart';
 
 /// A component representing the player character.
 ///
-/// At this stage, the Player is a simple visual placeholder (a blue rectangle)
-/// and does not yet contain any movement or physics logic.
-class Player extends RectangleComponent with HasGameRef {
+/// Implements [KeyboardHandler] to handle left/right movement.
+class Player extends RectangleComponent with HasGameRef, KeyboardHandler {
   /// The fixed size of the player character.
   static final Vector2 playerSize = Vector2(50, 100);
+
+  /// Horizontal movement speed in pixels per second.
+  static const double _moveSpeed = 300.0;
+
+  /// The current horizontal direction ( -1 for left, 1 for right, 0 for none).
+  int _horizontalDirection = 0;
 
   /// The vertical velocity of the player (pixels per second).
   double _verticalVelocity = 0.0;
 
   /// The gravity constant (acceleration in pixels per second squared).
-  /// This value determines how fast the player accelerates downward.
   static const double _gravity = 800.0;
 
   Player()
@@ -28,24 +33,49 @@ class Player extends RectangleComponent with HasGameRef {
   void update(double dt) {
     super.update(dt);
 
-    // 1. Apply gravity to vertical velocity.
-    _verticalVelocity += _gravity * dt;
+    // --- Horizontal Movement ---
+    // Apply horizontal velocity based on direction and speed.
+    position.x += _horizontalDirection * _moveSpeed * dt;
 
-    // 2. Apply vertical velocity to position.
+    // Keep the player within the visible screen bounds (X axis).
+    // Half width is used because the anchor is bottomCenter.
+    final halfWidth = size.x / 2;
+    if (position.x < halfWidth) {
+      position.x = halfWidth;
+    } else if (position.x > gameRef.size.x - halfWidth) {
+      position.x = gameRef.size.x - halfWidth;
+    }
+
+    // --- Vertical Movement (Gravity & Collision) ---
+    _verticalVelocity += _gravity * dt;
     position.y += _verticalVelocity * dt;
 
-    // 3. Ground Collision Detection.
-    // Calculate the Y coordinate of the top of the ground.
     final groundY = gameRef.size.y - Ground.groundHeight;
-
-    // Check if the player (anchored at bottomCenter) has passed the ground level.
     if (position.y >= groundY) {
-      // Snap position to the ground level to prevent sinking.
       position.y = groundY;
-      
-      // Stop downward movement by resetting velocity.
       _verticalVelocity = 0.0;
     }
+  }
+
+  @override
+  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    // Determine horizontal direction based on key presses.
+    final isLeftPressed = keysPressed.contains(LogicalKeyboardKey.keyA) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowLeft);
+    final isRightPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowRight);
+
+    if (isLeftPressed && isRightPressed) {
+      _horizontalDirection = 0;
+    } else if (isLeftPressed) {
+      _horizontalDirection = -1;
+    } else if (isRightPressed) {
+      _horizontalDirection = 1;
+    } else {
+      _horizontalDirection = 0;
+    }
+
+    return super.onKeyEvent(event, keysPressed);
   }
 
   @override
