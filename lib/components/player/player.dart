@@ -1,25 +1,20 @@
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 import '../character/character.dart';
+import '../character/character_config.dart';
+import '../character/direction.dart';
 
 /// A component representing the player character controlled by the user.
 ///
 /// Inherits physics and movement logic from [Character] and handles
 /// user keyboard input.
 class Player extends Character with KeyboardHandler {
-  /// The fixed size of the player character.
-  static final Vector2 playerSize = Vector2(50, 100);
-
-  /// Default movement settings for the player.
-  static const double _defaultMoveSpeed = 300.0;
-  static const double _defaultJumpForce = -450.0;
-
   Player()
       : super(
-          size: playerSize,
+          size: CharacterConfig.defaultSize,
           color: const Color(0xFF2196F3), // Blue color
-          moveSpeed: _defaultMoveSpeed,
-          jumpForce: _defaultJumpForce,
+          moveSpeed: CharacterConfig.defaultMoveSpeed,
+          jumpForce: CharacterConfig.defaultJumpForce,
         );
 
   @override
@@ -31,29 +26,21 @@ class Player extends Character with KeyboardHandler {
         keysPressed.contains(LogicalKeyboardKey.arrowRight);
 
     if (isLeftPressed && isRightPressed) {
-      horizontalDirection = 0;
+      currentDirection = CharacterDirection.none;
     } else if (isLeftPressed) {
-      horizontalDirection = -1;
+      currentDirection = CharacterDirection.left;
     } else if (isRightPressed) {
-      horizontalDirection = 1;
+      currentDirection = CharacterDirection.right;
     } else {
-      horizontalDirection = 0;
+      currentDirection = CharacterDirection.none;
     }
 
     // --- Jump Logic ---
-    // Trigger jump if Space is pressed.
-    // KeyDownEvent ensures the jump triggers once per press.
     if (event is KeyDownEvent &&
         keysPressed.contains(LogicalKeyboardKey.space)) {
       jump();
     }
 
     return super.onKeyEvent(event, keysPressed);
-  }
-
-  @override
-  Future<void> onLoad() async {
-    await super.onLoad();
-    // Additional player-specific initialization can go here.
   }
 }

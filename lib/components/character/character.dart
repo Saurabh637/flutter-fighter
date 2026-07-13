@@ -1,11 +1,13 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../environment/ground.dart';
+import 'direction.dart';
+import 'character_state.dart';
+import 'character_config.dart';
 
-/// A base class for all characters in Nexus Clash (Player, Enemies, NPCs).
+/// A base class for all characters in Nexus Clash (Player, Enemy).
 ///
-/// This class handles shared physics, movement, and collision logic
-/// to ensure consistency across all entities.
+/// This class handles shared physics, movement, and collision logic.
 abstract class Character extends RectangleComponent with HasGameReference {
   /// Horizontal movement speed in pixels per second.
   final double moveSpeed;
@@ -13,14 +15,14 @@ abstract class Character extends RectangleComponent with HasGameReference {
   /// The upward force applied when the character jumps.
   final double jumpForce;
 
-  /// The current horizontal direction (-1 for left, 1 for right, 0 for none).
-  int horizontalDirection = 0;
+  /// The current horizontal direction.
+  CharacterDirection currentDirection = CharacterDirection.none;
+
+  /// The current state of the character.
+  CharacterState currentState = CharacterState.idle;
 
   /// The vertical velocity of the character (pixels per second).
   double verticalVelocity = 0.0;
-
-  /// The gravity constant (acceleration in pixels per second squared).
-  static const double gravity = 800.0;
 
   /// Whether the character is currently standing on the ground.
   bool isGrounded = false;
@@ -41,6 +43,9 @@ abstract class Character extends RectangleComponent with HasGameReference {
   void update(double dt) {
     super.update(dt);
 
+    // Update state based on movement
+    _updateState();
+
     // --- Horizontal Movement ---
     applyHorizontalMovement(dt);
 
@@ -48,12 +53,30 @@ abstract class Character extends RectangleComponent with HasGameReference {
     applyGravityAndCollision(dt);
   }
 
-  /// Applies horizontal movement based on [horizontalDirection] and [moveSpeed].
+  /// Determines the character's state based on velocity and grounding.
+  void _updateState() {
+    if (!isGrounded) {
+      if (verticalVelocity < 0) {
+        currentState = CharacterState.jumping;
+      } else {
+        currentState = CharacterState.falling;
+      }
+    } else if (currentDirection != CharacterDirection.none) {
+      currentState = CharacterState.walking;
+    } else {
+      currentState = CharacterState.idle;
+    }
+  }
+
+  /// Applies horizontal movement based on [currentDirection] and [moveSpeed].
   void applyHorizontalMovement(double dt) {
-    position.x += horizontalDirection * moveSpeed * dt;
+    double dirMultiplier = 0;
+    if (currentDirection == CharacterDirection.left) dirMultiplier = -1;
+    if (currentDirection == CharacterDirection.right) dirMultiplier = 1;
+
+    position.x += dirMultiplier * moveSpeed * dt;
 
     // Keep the character within the visible screen bounds (X axis).
-    // Assumes Anchor.bottomCenter or Anchor.center for simplicity.
     final halfWidth = size.x / 2;
     if (position.x < halfWidth) {
       position.x = halfWidth;
@@ -62,9 +85,9 @@ abstract class Character extends RectangleComponent with HasGameReference {
     }
   }
 
-  /// Applies gravity to [verticalVelocity] and handles ground collision.
+  /// Applies gravity and handles ground collision.
   void applyGravityAndCollision(double dt) {
-    verticalVelocity += gravity * dt;
+    verticalVelocity += CharacterConfig.gravity * dt;
     position.y += verticalVelocity * dt;
 
     final groundY = game.size.y - Ground.groundHeight;
@@ -77,7 +100,7 @@ abstract class Character extends RectangleComponent with HasGameReference {
     }
   }
 
-  /// Triggers a jump if the character is currently on the ground.
+  /// Triggers a jump if the character is grounded.
   void jump() {
     if (isGrounded) {
       verticalVelocity = jumpForce;
