@@ -22,6 +22,12 @@ class Player extends RectangleComponent with HasGameRef, KeyboardHandler {
   /// The gravity constant (acceleration in pixels per second squared).
   static const double _gravity = 800.0;
 
+  /// The upward force applied when the player jumps.
+  static const double _jumpForce = -450.0;
+
+  /// Whether the player is currently standing on the ground.
+  bool _isGrounded = false;
+
   Player()
       : super(
           size: playerSize,
@@ -54,6 +60,9 @@ class Player extends RectangleComponent with HasGameRef, KeyboardHandler {
     if (position.y >= groundY) {
       position.y = groundY;
       _verticalVelocity = 0.0;
+      _isGrounded = true;
+    } else {
+      _isGrounded = false;
     }
   }
 
@@ -73,6 +82,16 @@ class Player extends RectangleComponent with HasGameRef, KeyboardHandler {
       _horizontalDirection = 1;
     } else {
       _horizontalDirection = 0;
+    }
+
+    // --- Jump Logic ---
+    // Trigger jump if Space is pressed AND the player is on the ground.
+    // KeyDownEvent ensures the jump triggers once per press.
+    if (event is KeyDownEvent &&
+        keysPressed.contains(LogicalKeyboardKey.space) &&
+        _isGrounded) {
+      _verticalVelocity = _jumpForce;
+      _isGrounded = false;
     }
 
     return super.onKeyEvent(event, keysPressed);
