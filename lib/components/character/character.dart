@@ -41,28 +41,52 @@ abstract class Character extends RectangleComponent with HasGameReference {
   void update(double dt) {
     super.update(dt);
 
-    // Update state based on movement
-    _updateState();
-
     // --- Horizontal Movement ---
     applyHorizontalMovement(dt);
 
     // --- Vertical Movement (Gravity & Collision) ---
     applyGravityAndCollision(dt);
+
+    // Update state based on movement results from this frame
+    _updateState();
   }
 
   /// Determines the character's state based on velocity and grounding.
+  /// 
+  /// This serves as the core state machine logic, automatically transitioning
+  /// between Idle, Run, Jump, Fall, and Land.
   void _updateState() {
+    // If airborne
     if (!isGrounded) {
       if (verticalVelocity < 0) {
-        currentState = CharacterState.jumping;
+        currentState = CharacterState.jump;
       } else {
-        currentState = CharacterState.falling;
+        currentState = CharacterState.fall;
       }
-    } else if (currentDirection != CharacterDirection.none) {
-      currentState = CharacterState.walking;
-    } else {
-      currentState = CharacterState.idle;
+    } 
+    // If grounded
+    else {
+      // Check if we just landed this frame
+      if (currentState == CharacterState.fall || currentState == CharacterState.jump) {
+        currentState = CharacterState.land;
+      } 
+      // If we are already in land state, we stay there for one frame then transition
+      // to idle or run. This allows animation systems to trigger landing effects.
+      else if (currentState == CharacterState.land) {
+        if (currentDirection != CharacterDirection.none) {
+          currentState = CharacterState.run;
+        } else {
+          currentState = CharacterState.idle;
+        }
+      }
+      // Standard grounded states
+      else {
+        if (currentDirection != CharacterDirection.none) {
+          currentState = CharacterState.run;
+        } else {
+          currentState = CharacterState.idle;
+        }
+      }
     }
   }
 
@@ -103,6 +127,7 @@ abstract class Character extends RectangleComponent with HasGameReference {
     if (isGrounded) {
       verticalVelocity = config.jumpForce;
       isGrounded = false;
+      currentState = CharacterState.jump;
     }
   }
 }
