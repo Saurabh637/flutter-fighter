@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 ///
 /// This component provides a visual floor and serves as the foundation
 /// for future collision detection milestones.
-class Ground extends RectangleComponent with HasGameRef {
+class Ground extends RectangleComponent with HasGameReference {
   /// The fixed height of the ground platform.
   static const double groundHeight = 100.0;
 
@@ -19,9 +19,9 @@ class Ground extends RectangleComponent with HasGameRef {
   Future<void> onLoad() async {
     await super.onLoad();
     // Set initial width to match the game screen
-    size.x = gameRef.size.x;
+    size.x = game.size.x;
     // Position at the very bottom of the screen
-    position = Vector2(0, gameRef.size.y - groundHeight);
+    position = Vector2(0, game.size.y - groundHeight);
   }
 
   @override
