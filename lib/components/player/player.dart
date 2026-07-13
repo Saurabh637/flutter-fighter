@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import '../environment/ground.dart';
 
 /// A component representing the player character.
 ///
@@ -28,13 +29,23 @@ class Player extends RectangleComponent with HasGameRef {
     super.update(dt);
 
     // 1. Apply gravity to vertical velocity.
-    // velocity = initial_velocity + acceleration * time
     _verticalVelocity += _gravity * dt;
 
     // 2. Apply vertical velocity to position.
-    // position = initial_position + velocity * time
-    // We update position.y directly.
     position.y += _verticalVelocity * dt;
+
+    // 3. Ground Collision Detection.
+    // Calculate the Y coordinate of the top of the ground.
+    final groundY = gameRef.size.y - Ground.groundHeight;
+
+    // Check if the player (anchored at bottomCenter) has passed the ground level.
+    if (position.y >= groundY) {
+      // Snap position to the ground level to prevent sinking.
+      position.y = groundY;
+      
+      // Stop downward movement by resetting velocity.
+      _verticalVelocity = 0.0;
+    }
   }
 
   @override

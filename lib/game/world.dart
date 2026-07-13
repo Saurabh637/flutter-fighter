@@ -16,14 +16,14 @@ class FighterWorld extends Component with HasGameRef {
     add(ground);
 
     // 2. Add the player component.
-    // We position the player horizontally centered and vertically just above the ground.
+    // We position the player horizontally centered and vertically in the air.
     final player = Player();
 
-    // Calculate position: Center X, and Y is at the top of the ground.
-    // Since Player anchor is bottomCenter, position.y = ground's top.
+    // Calculate position: Center X, and Y is 300 pixels above the ground.
+    // This allows us to see the gravity in action as the player falls.
     player.position = Vector2(
       gameRef.size.x / 2,
-      gameRef.size.y - Ground.groundHeight,
+      gameRef.size.y - Ground.groundHeight - 300,
     );
 
     add(player);
