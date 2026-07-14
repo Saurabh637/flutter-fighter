@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
 import 'package:flutter_fighter/components/combat/health_component.dart';
+import 'package:flutter_fighter/components/combat/damage/damage_component.dart';
 import 'direction.dart';
 import 'character_state.dart';
 import 'character_config.dart';
@@ -10,6 +11,7 @@ import 'character_config.dart';
 abstract class Character extends RectangleComponent with HasGameReference {
   final CharacterConfig config;
   late final HealthComponent health;
+  late final DamageComponent damageProcessor;
   
   CharacterDirection currentDirection = CharacterDirection.none;
   CharacterState currentState = CharacterState.idle;
@@ -30,9 +32,13 @@ abstract class Character extends RectangleComponent with HasGameReference {
 
   @override
   Future<void> onLoad() async {
-    super.onLoad();
+    await super.onLoad();
+    
     health = HealthComponent(maxHealth: config.maxHealth);
     add(health);
+
+    damageProcessor = DamageComponent(health: health);
+    add(damageProcessor);
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:flutter_fighter/services/input/keyboard_input.dart';
 import 'package:flutter_fighter/components/character/character.dart';
 import 'package:flutter_fighter/components/character/character_config.dart';
 import 'package:flutter_fighter/components/character/direction.dart';
+import 'package:flutter_fighter/components/combat/attack/hitbox.dart' as combat;
 
 class Player extends Character with KeyboardHandler {
   final InputManager inputManager;
@@ -16,6 +17,22 @@ class Player extends Character with KeyboardHandler {
           color: const Color(0xFF2196F3),
         ) {
     _keyboardInput = KeyboardInput(this.inputManager);
+  }
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+
+    // Add a hitbox that represents the player's attack reach.
+    // For now, it's a simple area attached to the player.
+    add(
+      combat.Hitbox(
+        size: Vector2(size.x * 1.5, size.y),
+        owner: this,
+        // Centered horizontally relative to the player (bottom-center anchor)
+        position: Vector2(-size.x * 0.25, 0), 
+      ),
+    );
   }
 
   @override

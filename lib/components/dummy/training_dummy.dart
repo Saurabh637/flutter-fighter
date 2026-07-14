@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fighter/components/character/character.dart';
 import 'package:flutter_fighter/components/character/character_config.dart';
+import 'package:flutter_fighter/components/combat/attack/hurtbox.dart';
 
 /// A stationary target for combat testing.
 /// 
@@ -17,4 +18,17 @@ class TrainingDummy extends Character {
           ),
           color: Colors.red,
         );
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+
+    // Add a hurtbox that covers the dummy's entire body.
+    add(
+      Hurtbox(
+        size: size,
+        damageComponent: damageProcessor,
+      ),
+    );
+  }
 }

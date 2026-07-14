@@ -7,7 +7,7 @@ import 'package:flutter_fighter/managers/camera_manager.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
 import 'world.dart';
 
-class FighterGame extends FlameGame with HasKeyboardHandlerComponents {
+class FighterGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
   final InputManager inputManager = InputManager();
   final FighterWorld fighterWorld = FighterWorld();
   late final CameraManager cameraManager;
