@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
-import 'package:flutter_fighter/components/combat/health_component.dart';
+import 'package:flutter_fighter/components/combat/health/health_component.dart';
 import 'package:flutter_fighter/components/combat/damage/damage_component.dart';
 import 'direction.dart';
 import 'character_state.dart';

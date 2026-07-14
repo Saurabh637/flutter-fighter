@@ -1,4 +1,4 @@
 import 'package:flame/components.dart';
 
-/// Placeholder for future attack logic.
+/// A component that manages character attacks and combat actions.
 class AttackComponent extends Component {}

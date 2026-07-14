@@ -1,4 +1,4 @@
 import 'package:flame/components.dart';
 
-/// Placeholder for future knockback physics.
+/// A component that handles knockback physics and movement for a character.
 class KnockbackComponent extends Component {}

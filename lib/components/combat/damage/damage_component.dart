@@ -1,5 +1,5 @@
 import 'package:flame/components.dart';
-import 'package:flutter_fighter/components/combat/health_component.dart';
+import 'package:flutter_fighter/components/combat/health/health_component.dart';
 
 /// A component that processes incoming damage for a character.
 /// 
