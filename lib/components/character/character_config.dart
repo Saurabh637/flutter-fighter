@@ -7,13 +7,15 @@ class CharacterConfig {
   final double moveSpeed;
   final double jumpForce;
   final double gravity;
+  final double maxHealth;
 
   const CharacterConfig({
     required this.name,
     required this.size,
-    this.moveSpeed = 400.0,    // Increased speed
-    this.jumpForce = -600.0,   // Increased jump height
-    this.gravity = 1200.0,     // Increased gravity for snappier feel
+    this.moveSpeed = 400.0,
+    this.jumpForce = -600.0,
+    this.gravity = 1200.0,
+    this.maxHealth = 100.0,
   });
 
   static final CharacterConfig defaultPlayer = CharacterConfig(

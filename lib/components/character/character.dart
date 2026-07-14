@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
+import 'package:flutter_fighter/components/combat/health_component.dart';
 import 'direction.dart';
 import 'character_state.dart';
 import 'character_config.dart';
@@ -8,6 +9,8 @@ import 'character_config.dart';
 /// Base class for all characters with physics and world boundaries.
 abstract class Character extends RectangleComponent with HasGameReference {
   final CharacterConfig config;
+  late final HealthComponent health;
+  
   CharacterDirection currentDirection = CharacterDirection.none;
   CharacterState currentState = CharacterState.idle;
   double verticalVelocity = 0.0;
@@ -24,6 +27,13 @@ abstract class Character extends RectangleComponent with HasGameReference {
           paint: Paint()..color = color,
           anchor: anchor,
         );
+
+  @override
+  Future<void> onLoad() async {
+    super.onLoad();
+    health = HealthComponent(maxHealth: config.maxHealth);
+    add(health);
+  }
 
   @override
   void update(double dt) {
