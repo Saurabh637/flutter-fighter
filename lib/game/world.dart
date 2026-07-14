@@ -2,8 +2,10 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
 import 'package:flutter_fighter/components/player/player.dart';
+import 'package:flutter_fighter/components/dummy/training_dummy.dart';
 import 'package:flutter_fighter/game/fighter_game.dart';
 
+/// The game world containing all entities and environment.
 class FighterWorld extends World with HasGameReference<FighterGame> {
   @override
   Future<void> onLoad() async {
@@ -22,11 +24,17 @@ class FighterWorld extends World with HasGameReference<FighterGame> {
     add(Ground());
 
     // 3. Add the player
+    // Starting on the left side of the world
     final player = Player(inputManager: game.inputManager);
-    player.position = Vector2(1500, 800); 
+    player.position = Vector2(200, 800); 
     add(player);
 
-    // 4. Start Camera Follow
+    // 4. Add a Training Dummy
+    // Placed a short distance ahead of the player
+    final dummy = TrainingDummy(position: Vector2(700, 800));
+    add(dummy);
+
+    // 5. Start Camera Follow
     game.cameraManager.follow(player);
   }
 }
