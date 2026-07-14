@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_fighter/components/shared/physics/physics_constants.dart';
 
 /// A manager that controls the camera's behavior.
 class CameraManager {
@@ -23,9 +24,9 @@ class CameraManager {
     if (_target == null) return;
 
     // 1. Follow the player horizontally (X-axis).
-    // 2. Lock the vertical position (Y-axis) to the bottom of the world (1000px).
+    // 2. Lock the vertical position (Y-axis) to the bottom of the world.
     // This ensures the ground never moves when you jump and there is no blue gap.
-    camera.viewfinder.position = Vector2(_target!.x, 1000);
+    camera.viewfinder.position = Vector2(_target!.x, PhysicsConstants.worldHeight);
   }
 
   /// Sets boundaries to prevent the camera from moving past the world edges.

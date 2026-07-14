@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
 import 'package:flutter_fighter/components/combat/health/health_component.dart';
 import 'package:flutter_fighter/components/combat/damage/damage_component.dart';
+import 'package:flutter_fighter/components/shared/physics/physics_constants.dart';
 import 'direction.dart';
 import 'character_state.dart';
 import 'character_config.dart';
@@ -59,8 +60,8 @@ abstract class Character extends RectangleComponent with HasGameReference {
     verticalVelocity += config.gravity * dt;
     position.y += verticalVelocity * dt;
 
-    // --- Ground Collision (Ground is at Y=800 in a 1000px high world) ---
-    const double groundTop = 1000.0 - Ground.groundHeight;
+    // --- Ground Collision ---
+    const double groundTop = PhysicsConstants.groundLevel;
     if (position.y >= groundTop) {
       position.y = groundTop;
       verticalVelocity = 0;

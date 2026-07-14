@@ -5,6 +5,7 @@ import 'package:flutter_fighter/components/player/player.dart';
 import 'package:flutter_fighter/managers/input_manager.dart';
 import 'package:flutter_fighter/managers/camera_manager.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
+import 'package:flutter_fighter/components/shared/physics/physics_constants.dart';
 import 'world.dart';
 
 class FighterGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
@@ -27,7 +28,7 @@ class FighterGame extends FlameGame with HasKeyboardHandlerComponents, HasCollis
     add(fighterWorld);
 
     // Set camera boundaries for the 3000px wide world
-    cameraManager.setBounds(const Rect.fromLTWH(0, 0, Ground.groundWidth, 1000));
+    cameraManager.setBounds(const Rect.fromLTWH(0, 0, Ground.groundWidth, PhysicsConstants.worldHeight));
   }
 
   @override

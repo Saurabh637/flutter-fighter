@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
 import 'package:flutter_fighter/components/player/player.dart';
 import 'package:flutter_fighter/components/dummy/training_dummy.dart';
+import 'package:flutter_fighter/components/shared/physics/physics_constants.dart';
 import 'package:flutter_fighter/game/fighter_game.dart';
 
 /// The game world containing all entities and environment.
@@ -15,7 +16,7 @@ class FighterWorld extends World with HasGameReference<FighterGame> {
     for (var i = 0; i < Ground.groundWidth; i += 400) {
       add(RectangleComponent(
         position: Vector2(i.toDouble(), 0),
-        size: Vector2(50, 1000),
+        size: Vector2(50, PhysicsConstants.worldHeight),
         paint: Paint()..color = Colors.white.withOpacity(0.05),
       ));
     }
