@@ -1,30 +1,32 @@
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_fighter/components/environment/ground.dart';
 import 'package:flutter_fighter/components/player/player.dart';
+import 'package:flutter_fighter/game/fighter_game.dart';
 
-/// The game world class that manages environmental and entity components.
-///
-/// This class acts as a container for all game world elements,
-/// such as the ground, platforms, and the player character.
-class FighterWorld extends Component with HasGameReference {
+class FighterWorld extends World with HasGameReference<FighterGame> {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // 1. Add the ground component to the world foundation.
-    final ground = Ground();
-    add(ground);
+    // 1. Add background pillars
+    for (var i = 0; i < Ground.groundWidth; i += 400) {
+      add(RectangleComponent(
+        position: Vector2(i.toDouble(), 0),
+        size: Vector2(50, 1000),
+        paint: Paint()..color = Colors.white.withOpacity(0.05),
+      ));
+    }
 
-    // 2. Add the player component.
-    final player = Player();
+    // 2. Add the ground
+    add(Ground());
 
-    // Calculate position: Center X, and Y is 300 pixels above the ground.
-    // This allows us to see the gravity in action as the player falls.
-    player.position = Vector2(
-      game.size.x / 2,
-      game.size.y - Ground.groundHeight - 300,
-    );
-
+    // 3. Add the player
+    final player = Player(inputManager: game.inputManager);
+    player.position = Vector2(1500, 800); 
     add(player);
+
+    // 4. Start Camera Follow
+    game.cameraManager.follow(player);
   }
 }

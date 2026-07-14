@@ -6,62 +6,40 @@ import 'package:flutter_fighter/components/character/character.dart';
 import 'package:flutter_fighter/components/character/character_config.dart';
 import 'package:flutter_fighter/components/character/direction.dart';
 
-/// A component representing the player character controlled by the user.
-///
-/// This component is decoupled from physical input devices. It reads intended
-/// actions from an [InputManager] and executes them through the [Character] base.
 class Player extends Character with KeyboardHandler {
-  /// The single source of truth for all intended player actions.
   final InputManager inputManager;
-
-  /// The adapter that translates physical keyboard events.
   late final KeyboardInput _keyboardInput;
 
-  Player({InputManager? inputManager})
-      : inputManager = inputManager ?? InputManager(),
-        super(
+  Player({required this.inputManager})
+      : super(
           config: CharacterConfig.defaultPlayer,
-          color: const Color(0xFF2196F3), // Blue color
+          color: const Color(0xFF2196F3),
         ) {
     _keyboardInput = KeyboardInput(this.inputManager);
   }
 
   @override
   void update(double dt) {
-    // 1. Process movement based on the InputManager state.
-    _handleInput();
-
-    // 2. Perform base character updates (physics, gravity, collision).
-    super.update(dt);
-
-    // 3. Clear transient input flags (like jump) after they have been processed.
-    inputManager.resetTransientStates();
-  }
-
-  /// Reads current actions from the [InputManager] and updates the character state.
-  void _handleInput() {
-    // Sync horizontal direction.
-    if (inputManager.moveLeft && inputManager.moveRight) {
-      currentDirection = CharacterDirection.none;
-    } else if (inputManager.moveLeft) {
+    // Sync input to character direction
+    if (inputManager.moveLeft && !inputManager.moveRight) {
       currentDirection = CharacterDirection.left;
-    } else if (inputManager.moveRight) {
+    } else if (inputManager.moveRight && !inputManager.moveLeft) {
       currentDirection = CharacterDirection.right;
     } else {
       currentDirection = CharacterDirection.none;
     }
 
-    // Trigger jump if intended.
+    // Handle Jump
     if (inputManager.jump) {
       jump();
+      inputManager.jump = false; // Reset immediately after triggering
     }
-    
-    // Future: Handle lightAttack, heavyAttack, etc. from inputManager here.
+
+    super.update(dt);
   }
 
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    // Delegate key events to the specialized Keyboard Input Adapter.
     return _keyboardInput.onKeyEvent(event, keysPressed);
   }
 }
