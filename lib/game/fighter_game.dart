@@ -1,6 +1,8 @@
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fighter/components/player/player.dart';
+import 'package:flutter_fighter/managers/input_manager.dart';
 import 'world.dart';
 
 /// The core game class for Flutter Fighter.
@@ -11,7 +13,12 @@ import 'world.dart';
 /// within child components.
 class FighterGame extends FlameGame with HasKeyboardHandlerComponents {
   /// The world foundation containing environmental components.
-  late final FighterWorld fighterWorld;
+  /// Initialized immediately to avoid LateInitializationError in the UI overlay.
+  final FighterWorld fighterWorld = FighterWorld();
+
+  /// Exposes the player's input manager to the UI overlay.
+  InputManager? get inputManager => 
+      fighterWorld.isLoaded ? fighterWorld.children.query<Player>().firstOrNull?.inputManager : null;
 
   @override
   Color backgroundColor() => const Color(0xFF81D4FA); // Light blue sky color
@@ -20,9 +27,7 @@ class FighterGame extends FlameGame with HasKeyboardHandlerComponents {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // 1. Initialize the world foundation.
-    // We add it directly to the game to use screen-space coordinates for this milestone.
-    fighterWorld = FighterWorld();
+    // Add the already initialized world foundation.
     add(fighterWorld);
 
     // Preparation for future milestones:

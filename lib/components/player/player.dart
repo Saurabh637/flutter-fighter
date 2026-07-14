@@ -1,10 +1,10 @@
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
-import '../../managers/input_manager.dart';
-import '../../services/input/keyboard_input.dart';
-import '../character/character.dart';
-import '../character/character_config.dart';
-import '../character/direction.dart';
+import 'package:flutter_fighter/managers/input_manager.dart';
+import 'package:flutter_fighter/services/input/keyboard_input.dart';
+import 'package:flutter_fighter/components/character/character.dart';
+import 'package:flutter_fighter/components/character/character_config.dart';
+import 'package:flutter_fighter/components/character/direction.dart';
 
 /// A component representing the player character controlled by the user.
 ///

@@ -1,7 +1,6 @@
 import 'package:flame/components.dart';
-import '../components/environment/ground.dart';
-import '../components/player/player.dart';
-import '../services/input/touch_input.dart';
+import 'package:flutter_fighter/components/environment/ground.dart';
+import 'package:flutter_fighter/components/player/player.dart';
 
 /// The game world class that manages environmental and entity components.
 ///
@@ -20,15 +19,12 @@ class FighterWorld extends Component with HasGameReference {
     final player = Player();
 
     // Calculate position: Center X, and Y is 300 pixels above the ground.
+    // This allows us to see the gravity in action as the player falls.
     player.position = Vector2(
       game.size.x / 2,
       game.size.y - Ground.groundHeight - 300,
     );
 
     add(player);
-
-    // 3. Add the Touch Input layer.
-    // This allows mobile users to control the character.
-    add(TouchInput(player.inputManager));
   }
 }
