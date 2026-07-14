@@ -1,44 +1,64 @@
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
+import '../../managers/input_manager.dart';
+import '../../services/input/keyboard_input.dart';
 import '../character/character.dart';
 import '../character/character_config.dart';
 import '../character/direction.dart';
 
 /// A component representing the player character controlled by the user.
 ///
-/// Inherits physics and movement logic from [Character] and handles
-/// user keyboard input based on its [config].
+/// This component bridges the [InputManager] with the [Character] gameplay logic.
+/// It uses [KeyboardInput] to capture physical events and translate them into
+/// high-level actions.
 class Player extends Character with KeyboardHandler {
+  /// The single source of truth for all intended player actions.
+  final InputManager _inputManager = InputManager();
+
+  /// The service that handles physical keyboard mapping.
+  late final KeyboardInput _keyboardInput;
+
   Player()
       : super(
           config: CharacterConfig.defaultPlayer,
           color: const Color(0xFF2196F3), // Blue color
-        );
+        ) {
+    _keyboardInput = KeyboardInput(_inputManager);
+  }
 
   @override
-  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    // Determine horizontal direction based on key presses.
-    final isLeftPressed = keysPressed.contains(LogicalKeyboardKey.keyA) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowLeft);
-    final isRightPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowRight);
+  void update(double dt) {
+    // 1. Synchronize character movement direction with input intent.
+    _updateMovementDirection();
 
-    if (isLeftPressed && isRightPressed) {
+    // 2. Handle one-shot actions like Jumping.
+    if (_inputManager.jump) {
+      jump();
+    }
+
+    // 3. Process physics and movement in the base Character class.
+    super.update(dt);
+
+    // 4. Reset transient states (like jump) so they don't trigger again next frame.
+    _inputManager.resetTransientStates();
+  }
+
+  /// Translates [InputManager] movement states into [CharacterDirection].
+  void _updateMovementDirection() {
+    if (_inputManager.moveLeft && _inputManager.moveRight) {
       currentDirection = CharacterDirection.none;
-    } else if (isLeftPressed) {
+    } else if (_inputManager.moveLeft) {
       currentDirection = CharacterDirection.left;
-    } else if (isRightPressed) {
+    } else if (_inputManager.moveRight) {
       currentDirection = CharacterDirection.right;
     } else {
       currentDirection = CharacterDirection.none;
     }
+  }
 
-    // --- Jump Logic ---
-    if (event is KeyDownEvent &&
-        keysPressed.contains(LogicalKeyboardKey.space)) {
-      jump();
-    }
-
-    return super.onKeyEvent(event, keysPressed);
+  @override
+  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    // Delegate physical key handling to the specialized keyboard service.
+    return _keyboardInput.onKeyEvent(event, keysPressed);
   }
 }
